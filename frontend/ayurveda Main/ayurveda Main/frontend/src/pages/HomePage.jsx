@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom"; // Import Link from react-router-dom
+import { Link } from "react-router-dom";
 
 const HomePage = () => {
   return (
@@ -35,32 +35,86 @@ const HomePage = () => {
           </p>
         </section>
 
-        {/* Locations Where Ayurvedic Products are Exported */}
+        {/* Featured Products Section */}
         <section className="mb-20">
-          <h2 className="text-3xl font-bold text-green-300 mb-6">Our Global Reach</h2>
+          <h2 className="text-3xl font-bold text-green-300 mb-6">SOME AYURVEDIC THINGS TO HELP IN DAY TO DAY LIFE.</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {/* Location 1 */}
-            <div className="text-center transition-all duration-500 ease-in-out hover:scale-105">
-              <img src='https://tse1.mm.bing.net/th?id=OIP.P5kqTSQPGhW4Sf5cZqLwbAHaEc&pid=Api&P=0&h=180' alt="Japan" className="w-full h-48 object-cover mb-4 rounded-lg shadow-lg" />
-              <h3 className="font-bold text-xl text-green-200">Japan</h3>
+            {/* Product 1 */}
+            <div className="text-center transition-all duration-500 ease-in-out hover:scale-105 bg-gray-800 rounded-lg p-6">
+              <img
+                src="https://organicbodhi.com/wp-content/uploads/2022/05/1-1.jpg"
+                alt="Kumkumadi Tailam"
+                className="w-full h-48 object-cover mb-4 rounded-lg shadow-lg"
+              />
+              <h3 className="font-bold text-xl text-green-200">Kumkumadi Tailam</h3>
+              <p className="text-gray-400 mt-2">
+                Ayurvedic facial oil for radiant skin.
+              </p>
             </div>
 
-            {/* Location 2 */}
-            <div className="text-center transition-all duration-500 ease-in-out hover:scale-105">
-              <img src="https://tse4.mm.bing.net/th?id=OIP.1bPVQiUNM3alRKUVzZN5zAHaF1&pid=Api&P=0&h=180" alt="USA" className="w-full h-48 object-cover mb-4 rounded-lg shadow-lg" />
-              <h3 className="font-bold text-xl text-green-200">USA</h3>
+            {/* Product 2 */}
+            <div className="text-center transition-all duration-500 ease-in-out hover:scale-105 bg-gray-800 rounded-lg p-6">
+              <img
+                src="https://www.verywellhealth.com/thmb/kidn0yQDv7v3jbDvddZ-zGbDawo=/2121x1414/filters:fill(87E3EF,1)/Bhringraj_flower-ab4b0b5297e74edf908e21a4d8b7cc5d.jpg"
+                alt="Bhringraj"
+                className="w-full h-48 object-cover mb-4 rounded-lg shadow-lg"
+              />
+              <h3 className="font-bold text-xl text-green-200">Bhringraj</h3>
+              <p className="text-gray-400 mt-2">
+                Promotes hair growth and prevents dandruff.
+              </p>
             </div>
 
-            {/* Location 3 */}
-            <div className="text-center transition-all duration-500 ease-in-out hover:scale-105">
-              <img src="https://tse3.mm.bing.net/th?id=OIP.MDcrFHdvxmDJfHY_INvluAHaE8&pid=Api&P=0&h=180" alt="UK" className="w-full h-48 object-cover mb-4 rounded-lg shadow-lg" />
-              <h3 className="font-bold text-xl text-green-200">UK</h3>
+            {/* Product 3 */}
+            <div className="text-center transition-all duration-500 ease-in-out hover:scale-105 bg-gray-800 rounded-lg p-6">
+              <img
+                src="https://static.fanpage.it/wp-content/uploads/sites/22/2018/04/licorice.jpg"
+                alt="Licorice"
+                className="w-full h-48 object-cover mb-4 rounded-lg shadow-lg"
+              />
+              <h3 className="font-bold text-xl text-green-200">Licorice</h3>
+              <p className="text-gray-400 mt-2">
+                Soothes sore throat and respiratory issues.
+              </p>
             </div>
 
-            {/* Location 4 */}
-            <div className="text-center transition-all duration-500 ease-in-out hover:scale-105">
-              <img src="https://tse1.mm.bing.net/th?id=OIP.QKAwVkdAJozjKHCUkCTt4wHaEo&pid=Api&P=0&h=180" alt="Australia" className="w-full h-48 object-cover mb-4 rounded-lg shadow-lg" />
-              <h3 className="font-bold text-xl text-green-200">Australia</h3>
+            {/* Product 4 */}
+            <div className="text-center transition-all duration-500 ease-in-out hover:scale-105 bg-gray-800 rounded-lg p-6">
+              <img
+                src="https://eattheplanet.org/wp-content/uploads/2019/11/pisauikan-N29JXkNO1xI-unsplash-1.jpg"
+                alt="Shilajit"
+                className="w-full h-48 object-cover mb-4 rounded-lg shadow-lg"
+              />
+              <h3 className="font-bold text-xl text-green-200">Aloe Vera</h3>
+              <p className="text-gray-400 mt-2">
+              Soothes and hydrates the skin.
+              </p>
+            </div>
+
+            {/* Product 5 */}
+            <div className="text-center transition-all duration-500 ease-in-out hover:scale-105 bg-gray-800 rounded-lg p-6">
+              <img
+                src="https://www.organicfacts.net/wp-content/uploads/2013/06/Brahmi.jpg"
+                alt="Herbal Tea"
+                className="w-full h-48 object-cover mb-4 rounded-lg shadow-lg"
+              />
+              <h3 className="font-bold text-xl text-green-200"> Brahmi</h3>
+              <p className="text-gray-400 mt-2">
+              Improves memory and cognitive function.
+              </p>
+            </div>
+
+            {/* Product 6 */}
+            <div className="text-center transition-all duration-500 ease-in-out hover:scale-105 bg-gray-800 rounded-lg p-6">
+              <img
+                src="https://static.toiimg.com/photo/78089961.cms"
+                alt="Ashwagandha Powder"
+                className="w-full h-48 object-cover mb-4 rounded-lg shadow-lg"
+              />
+              <h3 className="font-bold text-xl text-green-200"> Giloy</h3>
+              <p className="text-gray-400 mt-2">
+              Boosts immunity and fights infections.
+              </p>
             </div>
           </div>
         </section>
