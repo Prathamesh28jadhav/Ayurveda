@@ -4,18 +4,43 @@ import os
 import joblib
 import pandas as pd
 import streamlit.components.v1 as components
+import textwrap 
 
 # Paths to model, scaler, and CSV
-MODEL_PATH = r'D:\mini project\AI project\chatbot\models\svc_rbf_best_model.pkl'
-SCALER_PATH = r'D:\mini project\AI project\chatbot\models\scaler_best.pkl'
-SUGGESTION_CSV_PATH = r'D:\mini project\AI project\chatbot\data\diet.csv'
+MODEL_PATH = os.path.join(os.getcwd(), "models", "svc_rbf_best_model.pkl")
+SCALER_PATH = os.path.join(os.getcwd(), "models", "scaler_best.pkl")
+SUGGESTION_CSV_PATH = os.path.join(os.getcwd(), "data", "diet.csv")
+
+
+
+st.set_page_config(page_title="Chatbot", layout="wide")
+
+# Load chatbot.html content
+with open("static/chatbot.html", "r", encoding="utf-8") as html_file:
+    chatbot_html = html_file.read()
+
+# Load chatbot.css
+with open("static/chatbot.css", "r", encoding="utf-8") as css_file:
+    chatbot_css = f"<style>{css_file.read()}</style>"
+
+# Load chatbot.js
+with open("static/chatbot.js", "r", encoding="utf-8") as js_file:
+    chatbot_js = js_file.read()
+
+# Inject CSS & HTML
+st.markdown(chatbot_css, unsafe_allow_html=True)
+st.markdown(chatbot_html, unsafe_allow_html=True)
+
+# Inject JavaScript using components.html()
+components.html(f"<script>{chatbot_js}</script>", height=0)
+
 
 # Load model and scaler with error handling
 try:
     model = joblib.load(MODEL_PATH) if os.path.exists(MODEL_PATH) else None
     scaler = joblib.load(SCALER_PATH) if os.path.exists(SCALER_PATH) else None
 except Exception as e:
-    st.error(f"Error loading model or scaler: {e}")
+    st.error(f"Error loading model or scaler: {e}") 
     model, scaler = None, None
 
 # Load and preprocess CSV file for Diet & Lifestyle Suggestions
@@ -58,30 +83,30 @@ DOSHA_FEATURES = {
     "Liking Tastes": ["Sweet / Sour / Salty", "Sweet / Bitter / Astringent", "Pungent / Bitter / Astringent"]
 }
 
-# Custom CSS for styling the question box
-st.markdown(
-    """
-    <style>
-        .question-box {
-            background-color: white;
-            border: 2px solid #ddd;
-            padding: 15px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            font-size: 18px;
-            font-weight: bold;
-            color: #333;  /* Change text color to dark gray for better readability */
-        }
-        .info-icon {
-            width: 24px;
-            height: 24px;
-        }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
+# # Custom CSS for styling the question box
+# st.markdown(
+#     """
+#     <style>
+#         .question-box {
+#             background-color: white;
+#             border: 2px solid #ddd;
+#             padding: 15px;
+#             border-radius: 10px;
+#             display: flex;
+#             align-items: center;
+#             justify-content: space-between;
+#             font-size: 18px;
+#             font-weight: bold;
+#             color: #333;  /* Change text color to dark gray for better readability */
+#         }
+#         .info-icon {
+#             width: 24px;
+#             height: 24px;
+#         }
+#     </style>
+#     """,
+#     unsafe_allow_html=True
+# )
 
 
 # Clickable chatbot image (Right-Bottom Aligned)
@@ -128,11 +153,13 @@ if st.session_state.chat_stage < len(questions):
         f"""
         <div class="question-box">
             <span>🤖 Please select your {current_question.lower()}:</span>
+            
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="#000000" fill="none">
                 <path d="M22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12Z" stroke="currentColor" stroke-width="1.5" />
                 <path d="M12.2422 17V12C12.2422 11.5286 12.2422 11.2929 12.0957 11.1464C11.9493 11 11.7136 11 11.2422 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
                 <path d="M11.992 8H12.001" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
             </svg>
+            
         </div>
         """,
         unsafe_allow_html=True
@@ -171,22 +198,26 @@ elif st.session_state.chat_stage == len(questions):
             diet_to_avoid = dosha_row["diets to avoid"].values[0] if "diets to avoid" in diet_df.columns else "Data missing"
             lifestyle = dosha_row["lifestyle"].values[0] if "lifestyle" in diet_df.columns else "Data missing"
 
-            st.subheader(f"🌱 Recommended Diet & Lifestyle for {predicted_dosha}")
-             # Display Diet to Consume in Bullet Points
-            st.markdown("### 🍏 Diets to Consume:")
-            for item in diet_to_consume.split(","):
-                st.markdown(f"- {item.strip()}")
-            # Display Diet to Avoid in Bullet Points
-            st.markdown("### 🚫 Diets to Avoid:")
-            for item in diet_to_avoid.split(","):
-                st.markdown(f"- {item.strip()}")
+            
 
-            # Display Lifestyle Recommendations in Bullet Points
-            st.markdown("### 🧘 Lifestyle Recommendations:")
-            for item in lifestyle.split(","):
-                st.markdown(f"- {item.strip()}")
+
+
+    # Function to format long text into readable paragraphs
+            def format_paragraph(title, text, width=100):
+                return f"<p style='font-size:18px;'><strong>{title}</strong> {text}</p>"
+
+    # Display Diets and Lifestyle Recommendations in paragraph format
+            st.markdown(f"### 🍏 Diets to Consume:<br>{format_paragraph('Diets to Consume', diet_to_consume)}", unsafe_allow_html=True)
+            st.markdown(f"### 🚫 Diets to Avoid:<br>{format_paragraph('Diets to Avoid', diet_to_avoid)}", unsafe_allow_html=True)
+            st.markdown(f"### 🧘 Lifestyle Recommendations:<br>{format_paragraph('Lifestyle Recommendations', lifestyle)}", unsafe_allow_html=True)
+
+        
         else:
             st.error("⚠️ No matching Dosha found in the CSV data.")
+
+
+
+
 
     if st.button("Start Again 🔄"):
         st.session_state.chat_stage = 0
