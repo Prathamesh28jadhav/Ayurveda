@@ -1,20 +1,36 @@
-import streamlit as st
-import numpy as np
-import os
 import joblib
+import os
 import pandas as pd
-import streamlit.components.v1 as components
+from flask import Flask, request, jsonify
+from flask_cors import CORS
+
+app = Flask(__name__)
+CORS(app)
 
 # Paths to model, scaler, and CSV
-MODEL_PATH = os.path.join(os.getcwd(), "models", "svc_rbf_best_model.pkl")
-SCALER_PATH = os.path.join(os.getcwd(), "models", "scaler_best.pkl")
-SUGGESTION_CSV_PATH = os.path.join(os.getcwd(), "data", "diet.csv")
+MODEL_PATH = r'D:\mini project\AI project\chatbot\models\svc_rbf_best_model.pkl'
+SCALER_PATH = r'D:\mini project\AI project\chatbot\models\scaler_best.pkl'
+SUGGESTION_CSV_PATH = r'D:\mini project\AI project\chatbot\data\diet.csv'
 
-
-# Load model and scaler with error handling
+# ✅ Load model, scaler, and CSV
 try:
     model = joblib.load(MODEL_PATH) if os.path.exists(MODEL_PATH) else None
     scaler = joblib.load(SCALER_PATH) if os.path.exists(SCALER_PATH) else None
+
+    print(f"✅ Model Type: {type(model)}")
+    print(f"✅ Scaler Type: {type(scaler)}")
+
+    if not model or not scaler:
+        print("⚠️ Error: Model or Scaler not loaded properly!")
+
+    # ✅ Extract original feature names from the scaler
+    if hasattr(scaler, "feature_names_in_"):
+        scaler_feature_names = scaler.feature_names_in_.tolist()
+        print(f"✅ Scaler Feature Names: {scaler_feature_names}")
+    else:
+        print("⚠️ Scaler has no feature names. Using default names.")
+        scaler_feature_names = [str(i) for i in range(1, 21)]
+
 except Exception as e:
     st.error(f"Error loading model or scaler: {e}")
     model, scaler = None, None
@@ -86,7 +102,7 @@ st.markdown(
 
 
 # Clickable chatbot image (Right-Bottom Aligned)
-bot_url = "http://localhost:8502"  # Change port if needed
+bot_url = "http://localhost:8501"  # Change port if needed
 
 st.markdown(
     f"""
@@ -187,9 +203,22 @@ elif st.session_state.chat_stage == len(questions):
             for item in lifestyle.split(","):
                 st.markdown(f"- {item.strip()}")
         else:
-            st.error("⚠️ No matching Dosha found in the CSV data.")
+            diet_to_consume, diet_to_avoid, lifestyle = "No data", "No data", "No data"
 
-    if st.button("Start Again 🔄"):
-        st.session_state.chat_stage = 0
-        st.session_state.user_inputs = {}
-        st.rerun()
+        # ✅ Return prediction results
+        return jsonify({
+            "dosha": predicted_dosha,
+            "suggestions": {
+                "consume": diet_to_consume,
+                "avoid": diet_to_avoid,
+                "lifestyle": lifestyle
+            }
+        })
+
+    except Exception as e:
+        print(f"❌ Error in Prediction: {e}")
+        return jsonify({"error": "Prediction failed", "details": str(e)}), 500
+
+
+if __name__ == '__main__':
+    app.run(debug=True)

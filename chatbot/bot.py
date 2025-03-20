@@ -69,7 +69,7 @@ if user_input:
     st.session_state["messages"].append({"role": "user", "content": user_input})
 
     # Generate AI response
-    model = genai.GenerativeModel("gemini-pro")
+    model = genai.GenerativeModel("gemini-1.5-pro")
     response = model.generate_content(user_input)
     bot_reply = response.text
 

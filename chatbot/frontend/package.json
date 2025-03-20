@@ -3,30 +3,27 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@fortawesome/fontawesome-svg-core": "^6.7.2",
-    "@fortawesome/free-brands-svg-icons": "^6.7.2",
-    "@fortawesome/react-fontawesome": "^0.2.2",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.2.0",
     "@testing-library/user-event": "^13.5.0",
-    "autoprefixer": "^10.4.20",
-    "axios": "^1.7.9",
-    "postcss": "^8.5.2",
-    "postcss-flexbugs-fixes": "^5.0.2",
-    "postcss-loader": "^5.3.0",
+    "axios": "^1.8.3",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-router-dom": "^7.1.5",
     "react-scripts": "5.0.1",
-    "tailwindcss": "^4.0.6",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "frontend1": "cd \"D:/mini project/AI project/frontend/ayurveda Main/ayurveda Main/frontend\" && npm start",
+    "frontend2": "cd \"D:/mini project/AI project/chatbot/frontend\" && cross-env PORT=3001 npm start",
+    "backend": "cd \"D:/mini project/AI project/frontend/ayurveda Main/ayurveda Main/backend\" && npm start",
+    "flask": "cd \"D:/mini project/AI project/chatbot\" && python app.py",
+    "streamlit": "cd \"D:/mini project/AI project/chatbot\" && streamlit run bot.py",
+    "dev": "concurrently \"npm run frontend1\" \"npm run frontend2\" \"npm run backend\" \"npm run flask\" \"npm run streamlit\""
   },
   "eslintConfig": {
     "extends": [
@@ -45,5 +42,9 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "cross-env": "^7.0.3"
   }
 }
