@@ -6,9 +6,10 @@ import pandas as pd
 import streamlit.components.v1 as components
 
 # Paths to model, scaler, and CSV
-MODEL_PATH = r'D:\mini project\AI project\chatbot\models\svc_rbf_best_model.pkl'
-SCALER_PATH = r'D:\mini project\AI project\chatbot\models\scaler_best.pkl'
-SUGGESTION_CSV_PATH = r'D:\mini project\AI project\chatbot\data\diet.csv'
+MODEL_PATH = os.path.join(os.getcwd(), "models", "svc_rbf_best_model.pkl")
+SCALER_PATH = os.path.join(os.getcwd(), "models", "scaler_best.pkl")
+SUGGESTION_CSV_PATH = os.path.join(os.getcwd(), "data", "diet.csv")
+
 
 # Load model and scaler with error handling
 try:
@@ -85,7 +86,7 @@ st.markdown(
 
 
 # Clickable chatbot image (Right-Bottom Aligned)
-bot_url = "http://localhost:8501"  # Change port if needed
+bot_url = "http://localhost:8502"  # Change port if needed
 
 st.markdown(
     f"""
