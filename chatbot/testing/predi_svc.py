@@ -16,7 +16,7 @@ print(f"Loaded model type: {type(model)}")
 target = ["Vata", "Pitta", "Kapha", "Vata + Pitta", "Vata + Kapha", "Pitta + Kapha"]
 
 # Input features for prediction (adjust input according to the trained model's feature set)
-input_data = np.array([[2, 2, 1, 2, 2, 1, 1, 0, 0, 2, 2, 1, 1, 2, 2, 2, 2, 1, 2, 0]])
+input_data = np.array([[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]])
 
 # Verify input shape matches model's expected input size
 print(f"Input data shape: {input_data.shape}")

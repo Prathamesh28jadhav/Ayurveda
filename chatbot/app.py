@@ -1,225 +1,115 @@
-import streamlit as st
-import numpy as np
-import os
 import joblib
+import os
 import pandas as pd
-import streamlit.components.v1 as components
-import textwrap 
+from flask import Flask, request, jsonify
+from flask_cors import CORS
 
-# Paths to model, scaler, and CSV
-MODEL_PATH = os.path.join(os.getcwd(), "models", "svc_rbf_best_model.pkl")
-SCALER_PATH = os.path.join(os.getcwd(), "models", "scaler_best.pkl")
-SUGGESTION_CSV_PATH = os.path.join(os.getcwd(), "data", "diet.csv")
+app = Flask(__name__)
+CORS(app)
 
+# ✅ Paths to model, scaler, and CSV using absolute paths
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+MODEL_PATH = os.path.join(BASE_DIR, "models", "svc_rbf_best_model.pkl")
+SCALER_PATH = os.path.join(BASE_DIR, "models", "scaler_best.pkl")
+SUGGESTION_CSV_PATH = os.path.join(BASE_DIR, "data", "diet.csv")
 
-
-st.set_page_config(page_title="Chatbot", layout="wide")
-
-# Load chatbot.html content
-with open("static/chatbot.html", "r", encoding="utf-8") as html_file:
-    chatbot_html = html_file.read()
-
-# Load chatbot.css
-with open("static/chatbot.css", "r", encoding="utf-8") as css_file:
-    chatbot_css = f"<style>{css_file.read()}</style>"
-
-# Load chatbot.js
-with open("static/chatbot.js", "r", encoding="utf-8") as js_file:
-    chatbot_js = js_file.read()
-
-# Inject CSS & HTML
-st.markdown(chatbot_css, unsafe_allow_html=True)
-st.markdown(chatbot_html, unsafe_allow_html=True)
-
-# Inject JavaScript using components.html()
-components.html(f"<script>{chatbot_js}</script>", height=0)
-
-
-# Load model and scaler with error handling
+# ✅ Load model, scaler, and CSV
 try:
     model = joblib.load(MODEL_PATH) if os.path.exists(MODEL_PATH) else None
     scaler = joblib.load(SCALER_PATH) if os.path.exists(SCALER_PATH) else None
+
+    print(f"✅ Model Type: {type(model)}")
+    print(f"✅ Scaler Type: {type(scaler)}")
+
+    if not model or not scaler:
+        print("⚠️ Error: Model or Scaler not loaded properly!")
+
+    # ✅ Extract original feature names from the scaler
+    if hasattr(scaler, "feature_names_in_"):
+        scaler_feature_names = scaler.feature_names_in_.tolist()
+        print(f"✅ Scaler Feature Names: {scaler_feature_names}")
+    else:
+        print("⚠️ Scaler has no feature names. Using default names.")
+        scaler_feature_names = [str(i) for i in range(1, 21)]
+
 except Exception as e:
-    st.error(f"Error loading model or scaler: {e}") 
-    model, scaler = None, None
+    print(f"❌ Error loading model/scaler: {e}")
 
-# Load and preprocess CSV file for Diet & Lifestyle Suggestions
-diet_df = None
-if os.path.exists(SUGGESTION_CSV_PATH):
+# ✅ Load suggestions CSV
+diet_df = pd.read_csv(SUGGESTION_CSV_PATH) if os.path.exists(SUGGESTION_CSV_PATH) else None
+
+# ✅ Normalize CSV column names and values
+if diet_df is not None:
+    diet_df.columns = diet_df.columns.str.strip().str.lower()  # Normalize column names
+    print(f"✅ CSV Columns: {diet_df.columns.tolist()}")  # Display normalized column names
+
+
+@app.route('/predict', methods=['POST'])
+def predict():
     try:
-        diet_df = pd.read_csv(SUGGESTION_CSV_PATH, encoding="utf-8")
-        diet_df.columns = diet_df.columns.str.strip().str.lower()
+        data = request.json
+        features = data['features']
 
-        if "doshas" in diet_df.columns:
-            diet_df.rename(columns={"doshas": "dosha"}, inplace=True)
-    except Exception as e:
-        st.error(f"Error loading diet CSV: {e}")
+        # ✅ Ensure features are properly formatted
+        if len(features) != len(scaler_feature_names):
+            return jsonify({"error": "Feature length mismatch"}), 400
 
-# Streamlit App Header
-st.title("🧘‍♂️ Tridosha Identification Bot")
-st.write("Hi! I'm here to help you identify your **Dosha** type. Let's begin! 🎯")
+        print(f"📊 User Inputs: {features}")
 
-# Dosha Features
-DOSHA_FEATURES = {
-    "Body Size": ["Slim", "Medium", "Large"],
-    "Body Weight": ["Low", "Moderate", "Heavy"],
-    "Height": ["Short", "Average", "Tall"],
-    "Bone Structure": ["Light, Small bones, prominent joints", "Medium bone structure", "Large, broad shoulders, heavy bone structure"],
-    "Complexion": ["Dark-Complexion, tans easily", "Fair-skin sunburns easily", "White, pale, tans easily"],
-    "General Feel of Skin": ["Dry and thin, cool to touch, rough", "Smooth and warm, oily T-zone", "Thick and moist/greasy, cold"],
-    "Texture of Skin": ["Dry, pigments and aging", "Freckles, many moles, redness and rashes", "Oily"],
-    "Hair Color": ["Black/Brown, dull", "Red, light brown, yellow", "Brown"],
-    "Appearance of Hair": ["Dry, black, knotted, brittle", "Straight, oily", "Thick, Curly"],
-    "Shape of Face": ["Long, angular, thin", "Heart-shaped, pointed chin", "Large, round, full"],
-    "Eyes": ["Small, active, darting, dark eyes", "Medium-sized, penetrating, light-sensitive eyes", "Big, round, beautiful, glowing eyes"],
-    "Eyelashes": ["Scanty eyelashes", "Moderate eyelashes", "Thick/Fused eyelashes"],
-    "Blinking of Eyes": ["Excessive Blinking", "Moderate Blinking", "More or less stable"],
-    "Cheeks": ["Wrinkled, Sunken", "Smooth, Flat", "Rounded, Plump"],
-    "Nose": ["Crooked, Narrow", "Pointed, Average", "Rounded, Large open nostrils"],
-    "Teeth and Gums": ["Irregular, Protruding teeth, Receding gums", "Medium-sized teeth, Reddish gums", "Big, White, Strong teeth, Healthy gum"],
-    "Lips": ["Tight, thin, dry lips which chaps easily", "Lips are soft, medium-sized", "Lips are large, soft, pink, and full"],
-    "Nails": ["Dry, Rough, Brittle, Break", "Sharp, Flexible, Pink, Lustrous", "Thick, Oily, Smooth, Polished"],
-    "Appetite": ["Irregular, Scanty", "Strong, Unbearable", "Slow but steady"],
-    "Liking Tastes": ["Sweet / Sour / Salty", "Sweet / Bitter / Astringent", "Pungent / Bitter / Astringent"]
-}
+        # ✅ Create DataFrame with correct feature names
+        df = pd.DataFrame([features], columns=scaler_feature_names)
 
-# # Custom CSS for styling the question box
-# st.markdown(
-#     """
-#     <style>
-#         .question-box {
-#             background-color: white;
-#             border: 2px solid #ddd;
-#             padding: 15px;
-#             border-radius: 10px;
-#             display: flex;
-#             align-items: center;
-#             justify-content: space-between;
-#             font-size: 18px;
-#             font-weight: bold;
-#             color: #333;  /* Change text color to dark gray for better readability */
-#         }
-#         .info-icon {
-#             width: 24px;
-#             height: 24px;
-#         }
-#     </style>
-#     """,
-#     unsafe_allow_html=True
-# )
-
-
-# Clickable chatbot image (Right-Bottom Aligned)
-bot_url = "http://localhost:8501"  # Change port if needed
-
-st.markdown(
-    f"""
-    <style>
-        .chatbot-icon {{
-            position: fixed;
-            bottom: 50px;
-            right: 50px;
-            width: 50px; /* Adjust size */
-            height: 50px;
-            cursor: pointer;
-            z-index: 1000;
-        }}
-    </style>
-    <a href="{bot_url}" target="_blank">
-        <img src="https://cdn-icons-png.flaticon.com/512/4712/4712035.png" class="chatbot-icon">
-    </a>
-    """,
-    unsafe_allow_html=True
-)
-
-
-
-
-
-
-# Initialize session state
-if "chat_stage" not in st.session_state:
-    st.session_state.chat_stage = 0
-if "user_inputs" not in st.session_state:
-    st.session_state.user_inputs = {}
-
-questions = list(DOSHA_FEATURES.keys())
-if st.session_state.chat_stage < len(questions):
-    current_question = questions[st.session_state.chat_stage]
-    options = DOSHA_FEATURES[current_question]
-
-    # Display question inside a styled box with an info icon
-    st.markdown(
-        f"""
-        <div class="question-box">
-            <span>🤖 Please select your {current_question.lower()}:</span>
-            
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="#000000" fill="none">
-                <path d="M22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12Z" stroke="currentColor" stroke-width="1.5" />
-                <path d="M12.2422 17V12C12.2422 11.5286 12.2422 11.2929 12.0957 11.1464C11.9493 11 11.7136 11 11.2422 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                <path d="M11.992 8H12.001" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-            </svg>
-            
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-
-    selected_option = st.radio("", options, key=f"q{st.session_state.chat_stage}")
-
-    if st.button("Next 🚀"):
-        st.session_state.user_inputs[current_question] = selected_option
-        st.session_state.chat_stage += 1
-        st.rerun()
-
-elif st.session_state.chat_stage == len(questions):
-    st.write("🤖 **Bot:** Thank you for your responses! Now, let me predict your Dosha...")
-
-    try:
-        input_numeric = [DOSHA_FEATURES[q].index(st.session_state.user_inputs[q]) for q in questions]
-        input_array = np.array(input_numeric).reshape(1, -1)
-        input_scaled = scaler.transform(input_array) if scaler else input_array
-        prediction = model.predict(input_scaled) if model else None
-        predicted_index = int(prediction[0]) if prediction is not None else -1
-
-        dosha_labels = ["Vata", "Pitta", "Kapha", "Vata + Pitta", "Vata + Kapha", "Pitta + Kapha"]
-        predicted_dosha = dosha_labels[predicted_index] if predicted_index != -1 else "Error in Prediction"
-
-    except Exception as e:
-        st.error(f"Prediction error: {e}")
-        predicted_dosha = "Error in Prediction"
-
-    st.success(f"🎉 **Your predicted Dosha is:** **{predicted_dosha}**! 🌿")
-
-    if diet_df is not None and "dosha" in diet_df.columns:
-        if predicted_dosha in diet_df["dosha"].values:
-            dosha_row = diet_df[diet_df["dosha"] == predicted_dosha]
-            diet_to_consume = dosha_row["diets to consume"].values[0] if "diets to consume" in diet_df.columns else "Data missing"
-            diet_to_avoid = dosha_row["diets to avoid"].values[0] if "diets to avoid" in diet_df.columns else "Data missing"
-            lifestyle = dosha_row["lifestyle"].values[0] if "lifestyle" in diet_df.columns else "Data missing"
-
-            
-
-
-
-    # Function to format long text into readable paragraphs
-            def format_paragraph(title, text, width=100):
-                return f"<p style='font-size:18px;'><strong>{title}</strong> {text}</p>"
-
-    # Display Diets and Lifestyle Recommendations in paragraph format
-            st.markdown(f"### 🍏 Diets to Consume:<br>{format_paragraph('Diets to Consume', diet_to_consume)}", unsafe_allow_html=True)
-            st.markdown(f"### 🚫 Diets to Avoid:<br>{format_paragraph('Diets to Avoid', diet_to_avoid)}", unsafe_allow_html=True)
-            st.markdown(f"### 🧘 Lifestyle Recommendations:<br>{format_paragraph('Lifestyle Recommendations', lifestyle)}", unsafe_allow_html=True)
-
-        
+        # ✅ Scale the features
+        if hasattr(scaler, "transform"):
+            scaled_features = scaler.transform(df)
         else:
-            st.error("⚠️ No matching Dosha found in the CSV data.")
+            print("⚠️ Scaler is not properly loaded!")
+            return jsonify({"error": "Scaler not loaded correctly"}), 500
+
+        # ✅ Make predictions
+        prediction = model.predict(scaled_features)[0]
+
+        # ✅ Map prediction to Dosha
+        dosha_map = {
+            0: "Vata",
+            1: "Pitta",
+            2: "Kapha",
+            3: "Vata + Pitta",
+            4: "Vata + Kapha",
+            5: "Pitta + Kapha"
+        }
+        predicted_dosha = dosha_map.get(prediction, "Unknown").strip().lower()  # Normalize predicted dosha
+
+        print(f"✅ Predicted Dosha (Normalized): {predicted_dosha}")
+
+        # ✅ Fetch diet suggestions from CSV
+        if diet_df is not None and "doshas" in diet_df.columns:
+            # Normalize both sides for matching
+            dosha_row = diet_df[diet_df["doshas"].str.strip().str.lower() == predicted_dosha]
+
+            if not dosha_row.empty:
+                diet_to_consume = dosha_row["diets to consume"].values[0] if "diets to consume" in diet_df.columns else "Data missing"
+                diet_to_avoid = dosha_row["diets to avoid"].values[0] if "diets to avoid" in diet_df.columns else "Data missing"
+                lifestyle = dosha_row["lifestyle"].values[0] if "lifestyle" in diet_df.columns else "Data missing"
+            else:
+                diet_to_consume, diet_to_avoid, lifestyle = "No data", "No data", "No data"
+        else:
+            diet_to_consume, diet_to_avoid, lifestyle = "No data", "No data", "No data"
+
+        # ✅ Return prediction results
+        return jsonify({
+            "dosha": predicted_dosha,
+            "suggestions": {
+                "consume": diet_to_consume,
+                "avoid": diet_to_avoid,
+                "lifestyle": lifestyle
+            }
+        })
+
+    except Exception as e:
+        print(f"❌ Error in Prediction: {e}")
+        return jsonify({"error": "Prediction failed", "details": str(e)}), 500
 
 
-
-
-
-    if st.button("Start Again 🔄"):
-        st.session_state.chat_stage = 0
-        st.session_state.user_inputs = {}
-        st.rerun()
+if __name__ == '__main__':
+    app.run(debug=True)

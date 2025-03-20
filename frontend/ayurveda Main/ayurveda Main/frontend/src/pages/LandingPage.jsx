@@ -21,7 +21,7 @@ const AyurvedaLandingPage = () => {
           Discover the ancient science of Ayurveda for a healthier and balanced life.
         </p>
         <a
-          href="http://localhost:8502"
+          href="http://localhost:3001"
           target="_blank"  // Opens the link in a new tab
           rel="noopener noreferrer"  // Improves security
           className="mt-6 inline-block px-6 py-3 bg-green-800 rounded-lg text-white text-lg hover:bg-green-900 transition-all duration-300"
