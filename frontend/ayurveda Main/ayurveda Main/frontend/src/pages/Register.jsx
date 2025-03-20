@@ -32,9 +32,8 @@ const RegisterPage = () => {
       const response = await axios.post("http://localhost:5000/register", formData);
       setMessage(response.data.message);
 
-      setTimeout(() => {
-        navigate("/login");
-      }, 2000);
+      // Redirect to 2-Step Verification Page with Email
+      navigate("/2-step-verification", { state: { email: formData.email } });
 
       setFormData({ username: "", email: "", password: "" });
     } catch (err) {
@@ -48,23 +47,14 @@ const RegisterPage = () => {
 
   return (
     <div className="relative min-h-screen flex items-center justify-center bg-gray-900">
-      {/* Background Image */}
-      <div
-        className="absolute top-0 left-0 w-full h-full bg-cover bg-center z-0"
-      ></div>
-
-
-      {/* Main Content */}
       <div className="relative z-10 bg-white p-8 rounded-xl shadow-lg w-full max-w-md">
         <h1 className="text-3xl font-extrabold text-center text-green-400 mb-6">
           Welcome to Ayurveda Bliss
         </h1>
-        <p className="text-center text-gray-700 mb-6">
-          Discover the ancient wisdom of Ayurveda by joining us.
-        </p>
         {message && <p className="text-green-500 text-center mb-4">{message}</p>}
         {error && <p className="text-red-500 text-center mb-4">{error}</p>}
         <form onSubmit={handleSubmit}>
+          {/* Username Input */}
           <div className="mb-4">
             <label htmlFor="username" className="block text-sm font-medium text-gray-700">
               Username
@@ -75,10 +65,11 @@ const RegisterPage = () => {
               name="username"
               value={formData.username}
               onChange={handleChange}
-              className="mt-1 block w-full px-4 py-3 rounded-lg border-gray-300 shadow-sm focus:border-green-400 focus:ring-green-400 sm:text-base"
               required
+              className="mt-1 block w-full px-4 py-3 rounded-lg border-gray-300"
             />
           </div>
+          {/* Email Input */}
           <div className="mb-4">
             <label htmlFor="email" className="block text-sm font-medium text-gray-700">
               Email
@@ -89,10 +80,11 @@ const RegisterPage = () => {
               name="email"
               value={formData.email}
               onChange={handleChange}
-              className="mt-1 block w-full px-4 py-3 rounded-lg border-gray-300 shadow-sm focus:border-green-400 focus:ring-green-400 sm:text-base"
               required
+              className="mt-1 block w-full px-4 py-3 rounded-lg border-gray-300"
             />
           </div>
+          {/* Password Input */}
           <div className="mb-6">
             <label htmlFor="password" className="block text-sm font-medium text-gray-700">
               Password
@@ -103,14 +95,11 @@ const RegisterPage = () => {
               name="password"
               value={formData.password}
               onChange={handleChange}
-              className="mt-1 block w-full px-4 py-3 rounded-lg border-gray-300 shadow-sm focus:border-green-400 focus:ring-green-400 sm:text-base"
               required
+              className="mt-1 block w-full px-4 py-3 rounded-lg border-gray-300"
             />
           </div>
-          <button
-            type="submit"
-            className="w-full bg-green-400 text-white py-3 px-4 rounded-lg font-semibold text-xl hover:bg-green-500 transition-all duration-300"
-          >
+          <button type="submit" className="w-full bg-green-400 text-white py-3 rounded-lg">
             Register
           </button>
         </form>
