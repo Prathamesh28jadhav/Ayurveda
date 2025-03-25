@@ -23,27 +23,40 @@ const RegisterPage = () => {
   };
 
   // Handle form submission
+  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage("");
     setError("");
 
     try {
+      // ✅ Step 1: Register the user
       const response = await axios.post("http://localhost:5000/register", formData);
       setMessage(response.data.message);
 
-      // Redirect to 2-Step Verification Page with Email
+      // ✅ Step 2: Trigger OTP Immediately After Registration
+      const otpResponse = await axios.post("http://localhost:5000/send-otp", {
+        email: formData.email
+      });
+
+      console.log("✅ OTP Sent:", otpResponse.data);
+
+      // ✅ Step 3: Redirect to 2-Step Verification with email
       navigate("/2-step-verification", { state: { email: formData.email } });
 
+      // ✅ Clear form after registration
       setFormData({ username: "", email: "", password: "" });
+
     } catch (err) {
+      console.error("❌ Error:", err);
       if (err.response) {
         setError(err.response.data.message);
       } else {
-        setError("An error occurred. Please try again.");
+        setError("❌ An error occurred. Please try again.");
       }
     }
   };
+
 
   return (
     <div className="relative min-h-screen flex items-center justify-center bg-gray-900">

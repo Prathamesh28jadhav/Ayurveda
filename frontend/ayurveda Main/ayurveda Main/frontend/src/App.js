@@ -9,6 +9,7 @@ import Login from "./pages/Login";
 import TwoStepVerificationPage from "./pages/2StepVerificationPage"; // Import the new page
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
+import Publicchat from "./pages/Publicchat";
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
             {/* New route for TwoStepVerificationPage */}
             <Route path="/2-step-verification" element={<TwoStepVerificationPage />} />
             <Route path="/generate" element={<GeneratePage />} />
+            <Route path="/public_chat" element={<Publicchat />} />
           </Routes>
         </main>
         <Footer />
