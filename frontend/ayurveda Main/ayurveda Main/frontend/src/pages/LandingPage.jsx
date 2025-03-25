@@ -97,14 +97,12 @@ const AyurvedaLandingPage = () => {
         <p className="mt-4 text-lg md:text-xl">
           Discover the ancient science of Ayurveda for a healthier and balanced life.
         </p>
-        <a
-          href="http://localhost:3001"
-          target="_blank"
-          rel="noopener noreferrer"
+        <Link
+          to="/questions"
           className="mt-6 inline-block px-6 py-3 bg-green-800 rounded-lg text-white text-lg hover:bg-green-900 transition-all duration-300"
         >
           Try Chatbot
-        </a>
+        </Link>
       </header>
 
       {/* Additional Information Section */}

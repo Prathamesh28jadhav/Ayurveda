@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { Link } from "react-router-dom";
 
 const PublicChat = () => {
     const [posts, setPosts] = useState([]);
     const [content, setContent] = useState("");
     const [image, setImage] = useState(null);
     const [error, setError] = useState("");
+
 
     // ✅ Get JWT token and username from localStorage
     const token = localStorage.getItem("token");
@@ -122,6 +124,15 @@ const PublicChat = () => {
     return (
         <div className="min-h-screen bg-gray-100 py-12">
             <div className="max-w-6xl mx-auto grid grid-cols-12 gap-4">
+
+                <div className="col-span-12">
+                    <Link to="/home">
+                        <button className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition transform duration-500 ease-in-out hover:scale-105">
+                            🔙 Back
+                        </button>
+                    </Link>
+                </div>
+
 
                 {/* ✅ Left Section: Posts */}
                 <div className="col-span-7 bg-white p-6 rounded-lg shadow-lg">
