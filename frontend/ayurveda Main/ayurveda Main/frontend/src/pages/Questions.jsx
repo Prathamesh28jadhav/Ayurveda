@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-import "./Questions.css";
+import styles from "./Questions.module.css";
 
 
 const API_URL = "http://127.0.0.1:5000/predict";
@@ -390,21 +390,25 @@ const App = () => {
             setFeatures(updatedFeatures);
         }
 
+        const handleBackToHome = () => {
+            window.location.href = "/home";  // Link to home page
+        };
+
 
         return (
-            <div className="question-box">
+            <div className={styles["question-box"]}>
                 <h2>Question {currentQuestion + 1}/{totalQuestions}</h2>
-                <label className="label-question">{current.question}</label>
+                <label className={styles["label-question"]}>{current.question}</label>
 
                 {/* ✅ Display Image if available */}
                 {current.assets?.images && (
-                    <div className="image-container">
+                    <div className={styles["image-container"]}>
                         {current.assets.images.map((img, idx) => (
                             <img
                                 key={idx}
                                 src={img}
                                 alt={`Question ${currentQuestion}`}
-                                className="question-image"
+                                className={styles["question-image"]}
                             />
                         ))}
                     </div>
@@ -412,7 +416,7 @@ const App = () => {
 
                 {/* ✅ Display Description if available */}
                 {current.assets?.description && (
-                    <div className="description-panel">
+                    <div className={styles["description-panel"]}>
                         {current.assets.description.map((desc, idx) => (
                             <div key={idx}>
                                 <strong>{desc[0]}</strong>: {desc[1]}
@@ -422,7 +426,7 @@ const App = () => {
                 )}
 
                 {/* ✅ Display Options */}
-                <div className="options-container">
+                <div className={styles["options-container"]}>
                     {Object.keys(current.options).map((key) => (
                         <div key={key}>
                             <input
@@ -441,30 +445,30 @@ const App = () => {
     };
 
     return (
-        <div className="container">
-            <div className="card">
-                <h1 className="title">🧘‍♂️ Tridosha Identification</h1>
+        <div className={styles["container"]}>
+            <div className={styles["card"]}>
+                <h1 className={styles["title"]}>🧘‍♂️ Tridosha Identification</h1>
 
                 {renderQuestionPanel()}
 
-                <div className="btn-container">
-                    <button onClick={handlePrevious} disabled={currentQuestion === 0}>
+                <div className={styles["btn-container"]}>
+                    <button onClick={handlePrevious} disabled={currentQuestion === 0} className={styles["button"]}>
                         ⬅️ Previous
                     </button>
                     {currentQuestion < totalQuestions - 1 ? (
-                        <button onClick={handleNext}>➡️ Next</button>
+                        <button onClick={handleNext} className={styles["button"]}>➡️ Next</button>
                     ) : (
-                        <button onClick={handleSubmit}>🔮 Predict</button>
+                        <button onClick={handleSubmit} className={styles["button"]}>🔮 Predict</button>
                     )}
                 </div>
 
-                <button className="start-again" onClick={handleStartAgain}>
+                <button className={styles["start-again"]} onClick={handleStartAgain}>
                     🔄 Start Again
                 </button>
 
                 {/* ✅ Display Prediction Results */}
                 {result && (
-                    <div className="result">
+                    <div className={styles["result"]}>
                         <h2>🌿 Dosha: {result.dosha}</h2>
                         <p>🍏 Diet to Consume: {result.suggestions?.consume || "N/A"}</p>
                         <p>🚫 Diet to Avoid: {result.suggestions?.avoid || "N/A"}</p>
@@ -472,16 +476,16 @@ const App = () => {
                     </div>
                 )}
 
-                {error && <div className="error">{error}</div>}
+                {error && <div className={styles["error"]}>{error}</div>}
             </div>
+
             {/* ✅ Redirect Button at Bottom-Right */}
-            <button className="redirect-button" onClick={handleRedirect}>
+            <button className={styles["redirect-button"]} onClick={handleRedirect}>
                 chatbot
             </button>
         </div>
     );
 };
-
 
 
 
