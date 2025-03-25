@@ -383,6 +383,12 @@ const App = () => {
   // ✅ Render Question and Options
   const renderQuestionPanel = () => {
     const current = QUESTIONS[currentQuestion];
+    if (features[currentQuestion] === -1) {
+      const updatedFeatures = [...features];
+      updatedFeatures[currentQuestion] = 0;  // Select the first option (0) by default
+      setFeatures(updatedFeatures);
+    }
+
 
     return (
       <div className="question-box">
