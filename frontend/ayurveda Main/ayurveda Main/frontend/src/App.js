@@ -11,6 +11,7 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Publicchat from "./pages/Publicchat";
 import Questions from "./pages/Questions";
+import Yoga from "./pages/Yoga";
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
             <Route path="/generate" element={<GeneratePage />} />
             <Route path="/public_chat" element={<Publicchat />} />
             <Route path="/questions" element={<Questions />} />
+            <Route path="/yoga" element={<Yoga />} />
 
           </Routes>
         </main>

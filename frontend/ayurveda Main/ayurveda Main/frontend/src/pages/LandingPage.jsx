@@ -64,18 +64,39 @@ const AyurvedaLandingPage = () => {
               >
                 Generate
               </Link>
-              <button
-                onClick={handleSignOut}
-                className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg"
-              >
-                Sign Out
-              </button>
               <Link
                 to="/Public_chat"
                 className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg"
               >
                 Public chat
               </Link>
+              <Link
+                to="/yoga"
+                className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg"
+              >
+                Yoga videos
+              </Link>
+              <button
+                onClick={handleSignOut}
+                style={{
+                  display: "block",               // block
+                  width: "100%",                   // w-full
+                  textAlign: "left",               // text-left
+                  padding: "0.5rem 1rem",          // px-4 py-2
+                  color: "#4a5568",                // text-gray-700
+                  backgroundColor: "transparent",  // no background initially
+                  borderRadius: "0.5rem",          // rounded-lg
+                  transition: "background 0.3s",   // smooth hover transition
+                }}
+                onMouseEnter={(e) => (e.target.style.backgroundColor = "#f7fafc")}  // hover:bg-gray-100
+                onMouseLeave={(e) => (e.target.style.backgroundColor = "transparent")}
+              >
+                Sign Out
+              </button>
+
+
+
+
 
             </div>
           )}

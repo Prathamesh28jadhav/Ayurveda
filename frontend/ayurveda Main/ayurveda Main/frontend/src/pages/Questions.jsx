@@ -397,6 +397,28 @@ const App = () => {
 
         return (
             <div className={styles["question-box"]}>
+                {/* ✅ Back to Home Button with Inline CSS (Upper Left Corner) */}
+                <button
+                    onClick={handleBackToHome}
+                    style={{
+                        position: "fixed",
+                        top: "20px",
+                        left: "20px",
+                        padding: "10px 20px",
+                        fontSize: "16px",
+                        backgroundColor: "#4CAF50",   // Green color
+                        color: "white",
+                        border: "none",
+                        borderRadius: "8px",
+                        cursor: "pointer",
+                        transition: "background 0.3s",
+                        zIndex: "1000"  // Ensure button stays on top
+                    }}
+                    onMouseEnter={(e) => e.target.style.backgroundColor = "#45a049"}  // Hover effect
+                    onMouseLeave={(e) => e.target.style.backgroundColor = "#4CAF50"}
+                >
+                    🔙 Back to Home
+                </button>
                 <h2>Question {currentQuestion + 1}/{totalQuestions}</h2>
                 <label className={styles["label-question"]}>{current.question}</label>
 
@@ -456,7 +478,7 @@ const App = () => {
                         ⬅️ Previous
                     </button>
                     {currentQuestion < totalQuestions - 1 ? (
-                        <button onClick={handleNext} className={styles["button"]}>➡️ Next</button>
+                        <button onClick={handleNext} className={styles["button "]}>➡️ Next</button>
                     ) : (
                         <button onClick={handleSubmit} className={styles["button"]}>🔮 Predict</button>
                     )}

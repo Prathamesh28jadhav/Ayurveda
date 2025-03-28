@@ -37,3 +37,16 @@
     transform: rotate(360deg);
   }
 }
+
+/* Style all buttons except the Sign Out button */
+button:not(.signout-btn) {
+  background-color: #2f855a !important;
+  color: #ffffff !important;
+  padding: 0.5rem 1rem !important;
+  border-radius: 0.5rem !important;
+  transition: background 0.3s ease !important;
+}
+
+button:not(.signout-btn):hover {
+  background-color: #22543d !important;
+}
