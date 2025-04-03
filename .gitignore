@@ -6,3 +6,6 @@ myenv/
 
 # Environment variables
 .env
+
+uploads/
+
