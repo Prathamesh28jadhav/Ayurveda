@@ -359,7 +359,7 @@ const App = () => {
     };
 
     const handleRedirect = () => {
-        window.location.href = "http://localhost:8501";  // Change to your desired localhost
+        window.location.href = "/chatbot";  // Change to your desired localhost
     };
 
     // ✅ Submit Prediction Request

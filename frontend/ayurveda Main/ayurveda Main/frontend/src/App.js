@@ -3,7 +3,6 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import LandingPage from "./pages/LandingPage";
 import GeneratePage from "./pages/GeneratePage";
-
 import Register from "./pages/Register";
 import Login from "./pages/Login";
 import TwoStepVerificationPage from "./pages/2StepVerificationPage"; // Import the new page
@@ -12,6 +11,9 @@ import Footer from "./components/Footer";
 import Publicchat from "./pages/Publicchat";
 import Questions from "./pages/Questions";
 import Yoga from "./pages/Yoga";
+import Chatbot from "./pages/Chatbot";
+import Predictinfo from "./pages/Predictedinfo";
+
 
 function App() {
   return (
@@ -32,6 +34,8 @@ function App() {
             <Route path="/public_chat" element={<Publicchat />} />
             <Route path="/questions" element={<Questions />} />
             <Route path="/yoga" element={<Yoga />} />
+            <Route path="/chatbot" element={<Chatbot />} />
+            <Route path="/predictinfo" element={<Predictinfo />} />
 
           </Routes>
         </main>

@@ -76,6 +76,12 @@ const AyurvedaLandingPage = () => {
               >
                 Yoga videos
               </Link>
+              <Link
+                to="/predictinfo"
+                className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg"
+              >
+                check details
+              </Link>
               <button
                 onClick={handleSignOut}
                 style={{
@@ -122,7 +128,7 @@ const AyurvedaLandingPage = () => {
           to="/questions"
           className="mt-6 inline-block px-6 py-3 bg-green-800 rounded-lg text-white text-lg hover:bg-green-900 transition-all duration-300"
         >
-          Try Chatbot
+          Predict Tridosha
         </Link>
       </header>
 

@@ -8,7 +8,6 @@ const PublicChat = () => {
     const [image, setImage] = useState(null);
     const [error, setError] = useState("");
 
-
     // ✅ Get JWT token and username from localStorage
     const token = localStorage.getItem("token");
     const loggedInUser = localStorage.getItem("username");
@@ -17,7 +16,7 @@ const PublicChat = () => {
     const fetchPosts = async () => {
         try {
             const res = await axios.get("http://localhost:5000/api/posts", {
-                headers: { Authorization: `Bearer ${token}` },  // Attach JWT token
+                headers: { Authorization: `Bearer ${token}` }, // Fixed Template Literal
             });
             setPosts(res.data);
         } catch (error) {
@@ -52,7 +51,7 @@ const PublicChat = () => {
             await axios.post("http://localhost:5000/api/posts", formData, {
                 headers: {
                     "Content-Type": "multipart/form-data",
-                    Authorization: `Bearer ${token}`,  // Attach JWT token
+                    Authorization: `Bearer ${token}`, // Fixed Authorization header
                 },
             });
 
@@ -69,7 +68,7 @@ const PublicChat = () => {
     const handleLike = async (id) => {
         try {
             await axios.put(`http://localhost:5000/api/posts/${id}/like`, {}, {
-                headers: { Authorization: `Bearer ${token}` },
+                headers: { Authorization: `Bearer ${token}` }, // Fixed Syntax
             });
             fetchPosts();
         } catch (error) {
@@ -82,7 +81,7 @@ const PublicChat = () => {
     const handleDelete = async (id) => {
         try {
             await axios.delete(`http://localhost:5000/api/posts/${id}`, {
-                headers: { Authorization: `Bearer ${token}` },
+                headers: { Authorization: `Bearer ${token}` }, // Fixed Syntax
             });
             fetchPosts();
         } catch (error) {
@@ -97,9 +96,9 @@ const PublicChat = () => {
         if (comment) {
             try {
                 await axios.post(
-                    `http://localhost:5000/api/posts/${id}/comment`,
+                    `http://localhost:5000/api/posts/${id}/comment`, // Fixed Template Literal
                     { username: loggedInUser, text: comment },
-                    { headers: { Authorization: `Bearer ${token}` } }
+                    { headers: { Authorization: `Bearer ${token}` } } // Fixed Syntax
                 );
                 fetchPosts();
             } catch (error) {
@@ -122,17 +121,16 @@ const PublicChat = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-100 py-12">
+        <div className="bg-gray-500 min-h-screen py-12">
             <div className="max-w-6xl mx-auto grid grid-cols-12 gap-4">
 
                 <div className="col-span-12">
                     <Link to="/home">
-                        <button className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition transform duration-500 ease-in-out hover:scale-105">
+                        <button className="bg-gray-200 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition transform duration-500 ease-in-out hover:scale-105">
                             🔙 Back
                         </button>
                     </Link>
                 </div>
-
 
                 {/* ✅ Left Section: Posts */}
                 <div className="col-span-7 bg-white p-6 rounded-lg shadow-lg">
@@ -184,7 +182,7 @@ const PublicChat = () => {
                                             onClick={() => handleDelete(post._id)}
                                             className="bg-red-500 text-white px-4 py-1 rounded-lg hover:bg-red-600 transition"
                                         >
-                                            🗑️ Delete
+                                            🗑 Delete
                                         </button>
                                     )}
                                 </div>
@@ -238,6 +236,7 @@ const PublicChat = () => {
             </div>
         </div>
     );
+
 };
 
 export default PublicChat;
