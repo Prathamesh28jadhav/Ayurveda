@@ -1,11 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 const DoshaInformation = () => {
     const [selectedDosha, setSelectedDosha] = useState(null);
+    const [loading, setLoading] = useState(false); // To show loading state
+    const [error, setError] = useState(null); // To handle fetch errors
 
     const doshas = [
         {
-            name: "Vata Dosha",
+            name: "vata", // Normalized to match Flask output (lowercase, no spaces)
             consume: [
                 "Sweet, salty, and sour foods.",
                 "Rice, wheat, urad dal, milk, ghee, curd, chicken, mutton, dry fruits.",
@@ -29,7 +31,7 @@ const DoshaInformation = () => {
             image: "https://i.pinimg.com/originals/00/6f/10/006f10750943f13e0b2733f4e58ec5fc.jpg"
         },
         {
-            name: "Pitta Dosha",
+            name: "pitta",
             consume: [
                 "Sweet, bitter, and astringent foods.",
                 "Rice, wheat, mung bean, toor dal, amla, ghee, milk, pomegranate.",
@@ -49,15 +51,13 @@ const DoshaInformation = () => {
             image: "https://i.pinimg.com/736x/69/54/03/6954034ad6fd167c5ded4e36a93358c1.jpg"
         },
         {
-            name: "Kapha Dosha",
+            name: "kapha",
             consume: [
                 "Bitter, pungent, and astringent foods.",
                 "Mung beans, rice & wheat older than one year, barley, finger millet, sweet potatoes.",
                 "Spices like ginger, cumin seeds, carom seeds, turmeric, and cloves."
             ],
-            avoid: [
-                "Sweets, baked goods, and cold foods."
-            ],
+            avoid: ["Sweets, baked goods, and cold foods."],
             lifestyle: [
                 "Engage in regular, invigorating exercise.",
                 "Opt for a light, warming diet.",
@@ -68,7 +68,7 @@ const DoshaInformation = () => {
             image: "https://www.totalayurveda.in/wp-content/uploads/2023/11/Kapha-Dosha-1536x768.jpeg"
         },
         {
-            name: "Vata + Pitta",
+            name: "vata + pitta",
             consume: [
                 "Favor sweet, juicy fruits",
                 "Favor well-cooked or steamed veggies",
@@ -90,7 +90,7 @@ const DoshaInformation = () => {
             image: "https://i.pinimg.com/originals/00/6f/10/006f10750943f13e0b2733f4e58ec5fc.jpg"
         },
         {
-            name: "Pitta + Kapha",
+            name: "pitta + kapha",
             consume: [
                 "Lean, easy-to-digest proteins like fish, chicken, egg whites, and mung beans",
                 "Fiber-rich options such as buckwheat, quinoa, and vegetables",
@@ -111,7 +111,7 @@ const DoshaInformation = () => {
             image: "https://i.pinimg.com/originals/00/6f/10/006f10750943f13e0b2733f4e58ec5fc.jpg"
         },
         {
-            name: "Vata + Kapha",
+            name: "vata + kapha",
             consume: [
                 "Lean proteins like fish, chicken, egg whites, and mung beans",
                 "Fiber-rich options like buckwheat, quinoa, and cooked veggies",
@@ -132,12 +132,39 @@ const DoshaInformation = () => {
             ],
             image: "https://i.pinimg.com/originals/00/6f/10/006f10750943f13e0b2733f4e58ec5fc.jpg"
         }
-
-
     ];
 
+    // Function to fetch prediction from Flask backend
+    const fetchPrediction = () => {
+        setLoading(true);
+        setError(null);
+
+        // Placeholder feature array; replace with real user input later
+        const yourFeatureArray = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
+
+        fetch('https://ayurveda-flask-chatbot.onrender.com/predict', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ features: yourFeatureArray })
+        })
+            .then(res => {
+                if (!res.ok) throw new Error('Network response was not ok');
+                return res.json();
+            })
+            .then(data => {
+                const predictedDosha = doshas.find(dosha => dosha.name === data.dosha.toLowerCase());
+                setSelectedDosha(predictedDosha || null);
+                setLoading(false);
+            })
+            .catch(error => {
+                console.error('Fetch error:', error);
+                setError('Failed to fetch prediction. Please try again.');
+                setLoading(false);
+            });
+    };
+
     const handleDoshaChange = (event) => {
-        const doshaName = event.target.value;
+        const doshaName = event.target.value.toLowerCase();
         const selected = doshas.find((dosha) => dosha.name === doshaName);
         setSelectedDosha(selected);
     };
@@ -150,7 +177,7 @@ const DoshaInformation = () => {
             {/* Dosha Selection Dropdown */}
             <div className="w-full max-w-lg mx-auto mb-8">
                 <label htmlFor="dosha" className="text-2xl font-semibold text-gray-800 mb-3 block">
-                    Select Dosha
+                    Select Dosha (Manual)
                 </label>
                 <select
                     id="dosha"
@@ -167,12 +194,21 @@ const DoshaInformation = () => {
                         </option>
                     ))}
                 </select>
+
+                {/* Predict Button */}
+                <button
+                    onClick={fetchPrediction}
+                    className="mt-4 w-full p-3 bg-blue-600 text-white rounded-md shadow-md hover:bg-blue-700 disabled:bg-gray-400"
+                    disabled={loading}
+                >
+                    {loading ? "Predicting..." : "Predict My Dosha"}
+                </button>
+                {error && <p className="mt-2 text-red-600">{error}</p>}
             </div>
 
             {/* Dosha Information Content */}
             {selectedDosha ? (
                 <div className="flex flex-col md:flex-row w-full max-w-5xl mx-auto bg-white bg-opacity-90 p-6 rounded-lg shadow-xl transition-all duration-300">
-                    {/* Left Side: Image (Always on Left) */}
                     <div className="md:w-1/3 flex justify-center items-center p-4">
                         <img
                             src={selectedDosha.image}
@@ -180,25 +216,20 @@ const DoshaInformation = () => {
                             className="w-full h-auto max-h-80 object-cover rounded-lg shadow-lg"
                         />
                     </div>
-
-                    {/* Right Side: Dosha Details */}
                     <div className="md:w-2/3 p-6">
                         <h2 className="text-4xl font-bold mb-6 text-gray-800">{selectedDosha.name}</h2>
-
                         <h3 className="text-2xl font-semibold mb-4 text-blue-700">Diets to Consume:</h3>
                         <ul className="list-disc pl-5 space-y-2">
                             {selectedDosha.consume.map((item, idx) => (
                                 <li key={idx} className="text-lg text-gray-700">{item}</li>
                             ))}
                         </ul>
-
                         <h3 className="text-2xl font-semibold mt-6 mb-4 text-red-600">Diets to Avoid:</h3>
                         <ul className="list-disc pl-5 space-y-2">
                             {selectedDosha.avoid.map((item, idx) => (
                                 <li key={idx} className="text-lg text-gray-700">{item}</li>
                             ))}
                         </ul>
-
                         <h3 className="text-2xl font-semibold mt-6 mb-4 text-green-700">Lifestyle Recommendations:</h3>
                         <ul className="list-disc pl-5 space-y-2">
                             {selectedDosha.lifestyle.map((item, idx) => (
@@ -209,7 +240,7 @@ const DoshaInformation = () => {
                 </div>
             ) : (
                 <p className="text-xl text-gray-700 text-center mt-6">
-                    Please select a Dosha to see the details.
+                    Please select a Dosha or predict one to see the details.
                 </p>
             )}
         </div>
