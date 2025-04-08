@@ -61,15 +61,16 @@ def predict():
         print(f"Scaled features shape: {scaled_features.shape}")
         prediction = model.predict(scaled_features)[0]
         print(f"Raw prediction: {prediction}")
-        dosha_index = int(prediction)  # Convert float to int
+        dosha_index = int(prediction)
         dosha = ["vata", "pitta", "kapha"][dosha_index]
         print(f"Predicted dosha: {dosha}")
 
-        suggestions_row = diet_df[diet_df['dosha'].str.lower() == dosha].iloc[0]
+        # Use correct column names from diet.csv
+        suggestions_row = diet_df[diet_df['Doshas'].str.lower() == dosha].iloc[0]
         suggestions = {
-            "consume": suggestions_row['consume'].split(", "),
-            "avoid": suggestions_row['avoid'].split(", "),
-            "lifestyle": suggestions_row['lifestyle'].split(", ")
+            "consume": suggestions_row['Diets to Consume'].split(", "),
+            "avoid": suggestions_row['Diets to Avoid'].split(", "),
+            "lifestyle": suggestions_row['Lifestyle'].split(", ")
         }
 
         return jsonify({"dosha": dosha, "suggestions": suggestions})
