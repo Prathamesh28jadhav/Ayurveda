@@ -356,9 +356,21 @@ app.delete("/api/posts/:id", authMiddleware, async (req, res) => {
   }
 });
 
+app.get('/', (req, res) => {
+  res.send('Node.js backend running'); // Define root route
+});
+
 app.get('/api', (req, res) => {
   res.json({ message: 'Node.js backend running' });
 });
+const mongoUri = process.env.MONGO_URI;
+if (!mongoUri) {
+    console.error('⚠️ MONGO_URI not set. Skipping MongoDB connection.');
+} else {
+    mongoose.connect(mongoUri, { useNewUrlParser: true, useUnifiedTopology: true })
+        .then(() => console.log('✅ MongoDB connected'))
+        .catch(err => console.error('❌ MongoDB connection error:', err));
+}
 
 // ✅ Server Configuration
 const PORT = process.env.PORT || 5000;
