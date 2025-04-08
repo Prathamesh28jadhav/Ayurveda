@@ -364,44 +364,30 @@ const App = () => {
 
     // ✅ Submit Prediction Request
     const handleSubmit = async () => {
+        const payload = {
+            features: features.map((value) => (value >= 0 ? value : 0))
+        };
+
+        if (payload.features.length !== 20) {
+            setError("Please answer all 20 questions for an accurate prediction.");
+            return;
+        }
+
         try {
-            const payload = {
-                features: features.map((value) => (value >= 0 ? value : 0))  // Handle empty selections
-            };
             console.log("📤 Sending Payload:", payload);
-
-            const response = await axios.post(API_URL, payload);
-
+            const response = await axios.post(API_URL, payload, {
+                headers: { "Content-Type": "application/json" }
+            });
             console.log("✅ Response:", response.data);
             setResult(response.data);
             setError("");
+
+            navigate("/predictinfo", { state: { prediction: response.data } });
         } catch (error) {
-            console.error("❌ Error:", error);
-            setError("Error during prediction. Check server logs.");
+            console.error("❌ Error:", error.response ? error.response.data : error.message);
+            setError("Failed to get prediction. Please try again.");
         }
     };
-    // Validate payload
-    if (payload.features.length !== 20) {
-        setError("Please answer all 20 questions for an accurate prediction.");
-        return;
-    }
-
-    try {
-        console.log("📤 Sending Payload:", payload);
-        const response = await axios.post(API_URL, payload, {
-            headers: { "Content-Type": "application/json" }
-        });
-        console.log("✅ Response:", response.data);
-        setResult(response.data);
-        setError("");
-
-        // Redirect to /predictinfo with prediction
-        navigate("/predictinfo", { state: { prediction: response.data } });
-    } catch (error) {
-        console.error("❌ Error:", error.response ? error.response.data : error.message);
-        setError("Failed to get prediction. Please try again.");
-    }
-};
 
     // ✅ Render Question and Options
     const renderQuestionPanel = () => {
