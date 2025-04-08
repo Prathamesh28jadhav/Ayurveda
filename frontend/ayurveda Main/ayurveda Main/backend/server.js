@@ -356,6 +356,10 @@ app.delete("/api/posts/:id", authMiddleware, async (req, res) => {
   }
 });
 
+app.get('/api', (req, res) => {
+  res.json({ message: 'Node.js backend running' });
+});
+
 // ✅ Server Configuration
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
