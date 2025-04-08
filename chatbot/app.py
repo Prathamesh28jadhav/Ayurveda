@@ -35,9 +35,9 @@ except Exception as e:
 def home():
     return jsonify({
         "status": "Chatbot backend running!",
-        "model_loaded": bool(model),
-        "scaler_loaded": bool(scaler),
-        "diet_csv_loaded": bool(diet_df)
+        "model_loaded": model is not None,  # Check if not None
+        "scaler_loaded": scaler is not None,
+        "diet_csv_loaded": diet_df is not None  # Fixed: Check if not
     })
 
 @app.route('/predict', methods=['POST'])
