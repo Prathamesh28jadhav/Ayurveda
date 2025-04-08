@@ -27,6 +27,7 @@ try:
         print(f"❌ Diet CSV not found at {SUGGESTION_CSV_PATH}")
     else:
         print("✅ Model, scaler, and diet CSV loaded successfully")
+        print(f"Diet CSV columns: {diet_df.columns.tolist()}")
 except Exception as e:
     print(f"❌ Error loading resources: {e}")
     model, scaler, diet_df = None, None, None
@@ -35,19 +36,17 @@ except Exception as e:
 def home():
     return jsonify({
         "status": "Chatbot backend running!",
-        "model_loaded": model is not None,  # Check if not None
+        "model_loaded": model is not None,
         "scaler_loaded": scaler is not None,
-        "diet_csv_loaded": diet_df is not None  # Fixed: Check if not
+        "diet_csv_loaded": diet_df is not None
     })
 
 @app.route('/predict', methods=['POST'])
 def predict():
-    # Check if resources are loaded
     if not model or not scaler or diet_df is None:
         return jsonify({"error": "Server resources not loaded. Check logs."}), 500
 
     try:
-        # Get request data
         data = request.get_json()
         if not data or "features" not in data:
             return jsonify({"error": "Invalid payload. Expected {'features': [...]}"}), 400
@@ -56,16 +55,19 @@ def predict():
         if len(features) != 20:
             return jsonify({"error": f"Expected 20 features, got {len(features)}"}), 400
 
-        # Scale features and predict
         features_array = np.array(features).reshape(1, -1)
+        print(f"Features shape: {features_array.shape}")
         scaled_features = scaler.transform(features_array)
+        print(f"Scaled features shape: {scaled_features.shape}")
         prediction = model.predict(scaled_features)[0]
-        dosha = ["vata", "pitta", "kapha"][prediction]
+        print(f"Raw prediction: {prediction}")
+        dosha_index = int(prediction)  # Convert float to int
+        dosha = ["vata", "pitta", "kapha"][dosha_index]
+        print(f"Predicted dosha: {dosha}")
 
-        # Get suggestions from diet.csv (assuming columns: 'dosha', 'consume', 'avoid', 'lifestyle')
         suggestions_row = diet_df[diet_df['dosha'].str.lower() == dosha].iloc[0]
         suggestions = {
-            "consume": suggestions_row['consume'].split(", "),  # Convert string to list
+            "consume": suggestions_row['consume'].split(", "),
             "avoid": suggestions_row['avoid'].split(", "),
             "lifestyle": suggestions_row['lifestyle'].split(", ")
         }
@@ -77,4 +79,4 @@ def predict():
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port)  # No debug=True for production
+    app.run(host="0.0.0.0", port=port)
