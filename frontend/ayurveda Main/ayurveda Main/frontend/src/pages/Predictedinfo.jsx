@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 
 const DoshaInformation = () => {
     const [selectedDosha, setSelectedDosha] = useState(null);
-    const [loading, setLoading] = useState(false); // To show loading state
-    const [error, setError] = useState(null); // To handle fetch errors
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
+    const { state } = useLocation(); // Get prediction from Questions.js
 
     const doshas = [
         {
-            name: "vata", // Normalized to match Flask output (lowercase, no spaces)
+            name: "vata",
             consume: [
                 "Sweet, salty, and sour foods.",
                 "Rice, wheat, urad dal, milk, ghee, curd, chicken, mutton, dry fruits.",
@@ -134,12 +136,19 @@ const DoshaInformation = () => {
         }
     ];
 
-    // Function to fetch prediction from Flask backend
+    useEffect(() => {
+        // Set selectedDosha from navigation state (from Questions.js)
+        if (state?.prediction) {
+            const predictedDosha = doshas.find(dosha => dosha.name === state.prediction.dosha.toLowerCase());
+            setSelectedDosha(predictedDosha || null);
+            setError(predictedDosha ? null : "Dosha not found in list.");
+        }
+    }, [state]);
+
     const fetchPrediction = () => {
         setLoading(true);
         setError(null);
 
-        // Placeholder feature array; replace with real user input later
         const yourFeatureArray = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
 
         fetch('https://ayurveda-flask-chatbot.onrender.com/predict', {
@@ -174,7 +183,6 @@ const DoshaInformation = () => {
             className="flex flex-col w-full min-h-screen p-8 bg-cover bg-center"
             style={{ backgroundImage: 'url("https://wallpapercave.com/wp/wp3429906.png")' }}
         >
-            {/* Dosha Selection Dropdown */}
             <div className="w-full max-w-lg mx-auto mb-8">
                 <label htmlFor="dosha" className="text-2xl font-semibold text-gray-800 mb-3 block">
                     Select Dosha (Manual)
@@ -195,7 +203,6 @@ const DoshaInformation = () => {
                     ))}
                 </select>
 
-                {/* Predict Button */}
                 <button
                     onClick={fetchPrediction}
                     className="mt-4 w-full p-3 bg-blue-600 text-white rounded-md shadow-md hover:bg-blue-700 disabled:bg-gray-400"
@@ -206,7 +213,6 @@ const DoshaInformation = () => {
                 {error && <p className="mt-2 text-red-600">{error}</p>}
             </div>
 
-            {/* Dosha Information Content */}
             {selectedDosha ? (
                 <div className="flex flex-col md:flex-row w-full max-w-5xl mx-auto bg-white bg-opacity-90 p-6 rounded-lg shadow-xl transition-all duration-300">
                     <div className="md:w-1/3 flex justify-center items-center p-4">
